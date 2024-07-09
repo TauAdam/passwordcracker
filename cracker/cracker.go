@@ -1,25 +1,23 @@
 package cracker
 
 import (
-	"os"
-	"strings"
+	"crypto/sha1"
+	"fmt"
+	"passwordcracker/lib/wordlist"
 )
 
 func CrackSha1Hash(hash string, withSalt bool) (string, error) {
-	return "PASSWORD NOT IN DATABASE"
+	for _, word := range wordlist.ParseWordlist() {
+		if withSalt {
+
+		} else if hashOfWord := HashString(word); hashOfWord == hash {
+			return word, nil
+		}
+	}
+	return "PASSWORD NOT IN DATABASE", nil
 }
 
-func parseWordlist() []string {
-	b, err := os.ReadFile("./top-10k-passwords.txt")
-	if err != nil {
-		panic(err)
-	}
-	return strings.Split(string(b), "\n")
-}
-func parseSaltList() []string {
-	b, err := os.ReadFile("./known-salts.txt")
-	if err != nil {
-		panic(err)
-	}
-	return strings.Split(string(b), "\n")
+func HashString(str string) string {
+	sum := sha1.Sum([]byte(str))
+	return fmt.Sprintf("%x", sum)
 }
