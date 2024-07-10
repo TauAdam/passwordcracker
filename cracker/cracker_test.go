@@ -1,13 +1,18 @@
-package main_test
+package cracker_test
 
 import (
-	"passwordcracker/common"
-	"reflect"
+	"passwordcracker/cracker"
+	wordlist2 "passwordcracker/lib/wordlist"
 	"testing"
 )
 
-func TestGeneratedCases(t *testing.T) {
-	tests := []common.Case{
+func TestCrackSha1Hash(t *testing.T) {
+	cases := []struct {
+		expectedPassword string
+		hash             string
+	}{
+		{"ytrewq", "22837024f941f67c2ff80c49e6bccf110c062149"},
+		{"Batman", "32b26a271530f105cbc35cb653110e1a49d019b6"},
 		{"123456", "7c4a8d09ca3762af61e59520943dc26494f8941b"},
 		{"password", "5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8"},
 		{"12345678", "7c222fb2927d828af22f592134e8932480637c0d"},
@@ -30,12 +35,14 @@ func TestGeneratedCases(t *testing.T) {
 		{"666666", "1411678a0b9e25ee2f7c8b2f7ac92b6a74b3f9c5"},
 	}
 
-	t.Run("generated tests", func(t *testing.T) {
-		actual := common.GenerateTestCases(20)
-		if reflect.DeepEqual(actual, tests) {
-			t.Log("PASS")
-		} else {
-			t.Error("FAIL")
-		}
-	})
+	for _, tc := range cases {
+		t.Run(tc.expectedPassword, func(t *testing.T) {
+			actual, _ := cracker.CrackSha1Hash(wordlist2.ParseWordlist(".."), tc.hash, false)
+			if actual == tc.expectedPassword {
+				t.Logf("PASS: %s", tc.hash)
+			} else {
+				t.Errorf("FAIL: %s", tc.hash)
+			}
+		})
+	}
 }
